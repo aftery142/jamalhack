@@ -31,7 +31,7 @@ namespace Core.Feature
         {
             new Keybind((x, y) =>
             {
-                if (!y) return;
+                if (!y || score == null) return;
                 Utility.Log("Score submit cancelled.");
                 if (man != null) man.Dispose();
                 score = null; man = null;
