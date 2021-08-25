@@ -1,0 +1,3 @@
+[submodule "EazDecode"]
+	path = EazDecode
+	url = https://github.com/HoLLy-HaCKeR/EazDecode
