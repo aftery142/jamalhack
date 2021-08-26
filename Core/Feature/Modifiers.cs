@@ -30,6 +30,10 @@ namespace Core.Feature
 {
     public class Modifiers
     {
+        public enum YesNoMode
+        {
+            Disabled, Yes, No
+        }
         private static double _rate = 1;
         [JsonProperty("Rate Changer")]
         public static bool RateChanger = false;
@@ -41,6 +45,8 @@ namespace Core.Feature
         }
         [JsonProperty("Remove Flashlight")]
         public static bool FL = true;
+        [JsonProperty("Touch Device Detection")]
+        public static YesNoMode TD = YesNoMode.Disabled;
 
         public static void Init()
         {

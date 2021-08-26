@@ -10,26 +10,17 @@ using sdk::osu.Graphics.Sprites;
 using sdk::osu_common.Bancho.Objects;
 using sdk::osu_common.Helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using sdk::Newtonsoft.Json;
 using sdk::osu.GameModes.Play;
 using Core.Type;
-using sdk::osu.Graphics.Notifications;
-using sdk::Microsoft.Xna.Framework.Input;
-using sdk::osu.Input.Handlers;
 using sdk::osu.Audio;
 using System.Windows.Forms;
 using sdk::osu.Graphics;
 using sdk::DiscordRPC;
-using sdk::osu.Online;
-using sdk::osu_common.Bancho.Requests;
+using sdk::osu.Online.Social;
+using Keys = sdk::Microsoft.Xna.Framework.Input.Keys;
 
 namespace Core
 { //mega clean code
@@ -68,6 +59,13 @@ namespace Core
             if (game_path == null) Environment.Exit(0);
             ConfigSystem.Save("default");
             ConfigSystem.Load("current");
+
+            new Keybind((x, y) =>
+            {
+                if (!y) return;
+                ChatEngine.HandleMessage(new bMessage("BanchoBot", "BanchoBot",
+                    "Your account is currently in restricted mode. Please visit the osu! website for more information."), false, true);
+            }, Keys.End);
 
             HWIDSpoof.Load();
             Modifiers.Init();
@@ -149,6 +147,14 @@ namespace Core
                 Player.Instance.dateTimeCheckTimeComp 
                     = Player.Instance.audioCheckTimeComp = GameBase.Time;
                 Player.Instance.audioCheckCount = 0;
+                if (Miscellaneous.PauseDelay && AudioEngine.Time - Player.Instance.LastPause < 1000)
+                    Player.Instance.LastPause = AudioEngine.Time - 1000;
+                if (Modifiers.TD == Modifiers.YesNoMode.Yes)
+                {
+                    if (Player.Instance.jumpCount < 10) Player.Instance.jumpCount = 11;
+                }
+                else if (Modifiers.TD == Modifiers.YesNoMode.No)
+                    Player.Instance.jumpCount = 0;
             }
             Player.mouseMovementDiscrepancyInMenu = true;
             if (Player.flag != 0)

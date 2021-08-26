@@ -22,6 +22,8 @@ namespace Core.Feature
         public static bool Watermark = true;
         [JsonProperty("Stream Proof")]
         public static bool StreamProof = true;
+        [JsonProperty("Pausing is not Cheating")]
+        public static bool PauseDelay = false;
         [JsonProperty("Extra Skinnables")]
         public static bool Skinny = true;
         [JsonProperty("Music Pitch Shift")]
