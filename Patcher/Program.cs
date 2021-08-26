@@ -227,8 +227,10 @@ namespace Patcher
             if (idx == -1) throw new Exception("Discord id hook failed.");
             else
             {
-                l[idx + SIG_DISCORD_ID_OFF] = Instruction.Create(OpCodes.Nop);
-                l[idx + SIG_DISCORD_ID_OFF + 1] = Instruction.Create(OpCodes.Ldstr, "859355004313010206");
+                // l[idx + SIG_DISCORD_ID_OFF] = Instruction.Create(OpCodes.Nop);
+                // l[idx + SIG_DISCORD_ID_OFF + 1] = Instruction.Create(OpCodes.Ldstr, "859355004313010206");
+                l.Insert(idx + SIG_DISCORD_ID_OFF + 2,
+                    Instruction.Create(OpCodes.Call, game.Find("Core.Main", false).FindMethod("GetDiscordID")));
                 Console.WriteLine("[+] Discord id hooked.");
             }
 

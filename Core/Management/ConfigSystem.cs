@@ -24,7 +24,7 @@ namespace Core.Management
                     NotificationManager.ShowMessageMassive(
                         Load("current") ? "Config reloaded." : "Config loading failed.",
                         1000, 0);*/
-                Load("current");
+                if (y) Load("current");
             }, Keys.Home);
         }
         public static bool Load(string f)
@@ -33,9 +33,11 @@ namespace Core.Management
             {
                 JsonConvert.PopulateObject
                     (File.ReadAllText(Path.Combine("jamal/configs", f)), _inst);
+                Utility.Success("Loaded config: " + f);
                 return true;
             } catch (Exception e)
             {
+                Utility.Fail("Failed to load config: " + f);
                 Utility.Fail(e);
                 return false;
             }
@@ -44,6 +46,7 @@ namespace Core.Management
         {
             File.WriteAllText(Path.Combine("jamal/configs", f),
                 JsonConvert.SerializeObject(_inst, (Formatting)1));
+            Utility.Success("Saved config: " + f);
         }
         private static ConfigSystem _inst = new ConfigSystem();
 
@@ -61,6 +64,8 @@ namespace Core.Management
         private Submissions submissions = new Submissions();
         [JsonProperty("Modifiers")]
         private Modifiers modifiers = new Modifiers();
+        [JsonProperty("Discord Rich Presence")]
+        private DiscordPresence discord = new DiscordPresence();
         [JsonProperty("Misc")]
         private Miscellaneous misc = new Miscellaneous();
     }

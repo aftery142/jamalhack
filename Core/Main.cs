@@ -28,6 +28,8 @@ using sdk::osu.Audio;
 using System.Windows.Forms;
 using sdk::osu.Graphics;
 using sdk::DiscordRPC;
+using sdk::osu.Online;
+using sdk::osu_common.Bancho.Requests;
 
 namespace Core
 { //mega clean code
@@ -199,6 +201,8 @@ namespace Core
                 Utility.Debug("Loaded texture: " + x);
             return tex;
         }
+        public static string GetDiscordID(string s)
+            => DiscordPresence.GetID(s);
         public static RichPresence OnDiscordPresenceUpdate(RichPresence p)
             => DiscordPresence.Update(p);
         public static void OnSkinChanged()

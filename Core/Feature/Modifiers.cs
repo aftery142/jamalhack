@@ -47,12 +47,12 @@ namespace Core.Feature
             new Keybind((x, y) =>
             {
                 if (RateChanger && y)
-                    Rate += 0.05f;//NotificationManager.ShowMessageMassive("Rate: " + (Rate += 0.05f), 500, 0);
+                    Utility.Log("Rate: " + (Rate += 0.05f));//NotificationManager.ShowMessageMassive("Rate: " + (Rate += 0.05f), 500, 0);
             }, Keys.PageUp);
             new Keybind((x, y) =>
             {
                 if (RateChanger && y)
-                    Rate -= 0.05f;//NotificationManager.ShowMessageMassive("Rate: " + (Rate -= 0.05f), 500, 0);
+                    Utility.Log("Rate: " + (Rate -= 0.05f));//NotificationManager.ShowMessageMassive("Rate: " + (Rate -= 0.05f), 500, 0);
             }, Keys.PageDown);
         }
         public static double AdjustFrameInterval(double v)
