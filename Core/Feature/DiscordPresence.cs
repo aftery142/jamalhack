@@ -66,8 +66,10 @@ namespace Core.Feature
             => !Enabled || string.IsNullOrWhiteSpace(ID) ? s : ID;
         public static RichPresence Update(RichPresence p)
         {
-            if (!Enabled) return p;
+            Utility.Debug("Presence updated.");
             if (Uptime) p.Timestamps = new Timestamps(pTime);
+
+            if (!Enabled) return p;
             p.Assets.SmallImageText = (sImgText != null ? sImgText : p.State + " [" + Player.get_Mode() + "]");
             p.Assets.LargeImageText = (lImgText != null ? lImgText : "my account (nine digits)");
             if (Details != null) p.Details = Details;
@@ -76,7 +78,6 @@ namespace Core.Feature
                 LocalisationManager.GetString(OsuString.ChatEngine_PrivateMessageReceived), "BanchoBot"));
             p.Assets.SmallImageKey = sImgKey;
             p.Assets.LargeImageKey = lImgKey;
-            Utility.Debug("Presence updated.");
             return p;
         }
     }

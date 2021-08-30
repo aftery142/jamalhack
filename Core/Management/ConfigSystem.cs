@@ -35,6 +35,9 @@ namespace Core.Management
                     (File.ReadAllText(Path.Combine("jamal/configs", f)), _inst);
                 Utility.Success("Loaded config: " + f);
                 return true;
+            } catch (FileNotFoundException) {
+                Utility.Log("Config not found: " + f);
+                return false;
             } catch (Exception e)
             {
                 Utility.Fail("Failed to load config: " + f);

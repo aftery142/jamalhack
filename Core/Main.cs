@@ -42,11 +42,24 @@ namespace Core
             Directory.CreateDirectory("jamal");
             Directory.CreateDirectory("jamal/configs");
 
+            #region Load game path
             if (File.Exists("jamal/path.txt"))
                 game_path = File.ReadAllLines("jamal/path.txt")[0];
-            else {
+            if (!File.Exists(game_path))
+                game_path = null;
+            if (game_path == null && File.Exists("osu!.exe"))
+            {
+                game_path = "osu!.exe";
+                Utility.Log("Trying to use osu! executable from current directory.");
+            }
+            if (game_path != null && !AuthenticodeTools.IsTrusted(game_path))
+            {
+                game_path = null;
+                Utility.Fail("Original osu! executable is not signed!?");
+            }
+            if (game_path == null) {
                 OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Filter = "osu! executable|*.exe";
+                ofd.Filter = "osu! executable|osu!.exe";
                 ofd.CheckPathExists = true;
                 ofd.InitialDirectory = Assembly.GetEntryAssembly().Location;
                 if (ofd.ShowDialog() == DialogResult.OK)
@@ -57,6 +70,8 @@ namespace Core
                 }
             }
             if (game_path == null) Environment.Exit(0);
+            #endregion
+
             ConfigSystem.Save("default");
             ConfigSystem.Load("current");
 
