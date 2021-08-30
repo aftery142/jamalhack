@@ -25,6 +25,8 @@ tested on bancho ainu n ripple
 
 - hwid changer
 
+- taikomania fix
+
 - some misc shit nobody cares about
 ### binds
 page up = uprate 0.05

@@ -208,6 +208,19 @@ namespace Patcher
                 .FindMethod(game_mapping.Encrypt("Load")).Body;
             Local tmp = bd.Variables.Add(new Local(bd.Variables[0].Type));
             l = (List<Instruction>)bd.Instructions;
+            idx = Find(l, SIG_TAIKOMANIA);
+            if (idx == -1) throw new Exception("Taikomania fix hook failed.");
+            else
+            {
+                l[idx + SIG_TAIKOMANIA_OFF].OpCode = OpCodes.Ldsfld;
+                l[idx + SIG_TAIKOMANIA_OFF].Operand =
+                    game.Find("Core.Feature.Miscellaneous", false).FindField("Taikomania");
+                l.InsertRange(idx + SIG_TAIKOMANIA_OFF + 1, new Instruction[] {
+                    Instruction.Create(OpCodes.Ldc_I4_0),
+                    Instruction.Create(OpCodes.Ceq)
+                });
+                Console.WriteLine("[+] Taikomania fix hooked.");
+            }
             l.InsertRange(0, new Instruction[] {
                 Instruction.Create(OpCodes.Ldarg_0),
                 Instruction.Create(OpCodes.Ldarg_1),
@@ -272,6 +285,14 @@ namespace Patcher
             Code.Ldfld, Code.Call, Code.Callvirt, Code.Nop,
             Code.Ldarg_0, Code.Ldfld, Code.Ldarg_0, Code.Ldfld, Code.Callvirt
         }; static readonly int SIG_DISCORD_OFF = 8;
+        static readonly Code[] SIG_TAIKOMANIA =
+        {
+            Code.Ldarg_0, Code.Ldc_I4, Code.Call, Code.Call, Code.Brtrue_S,
+            Code.Ldarg_0, Code.Ldc_I4, Code.Call, Code.Call, Code.Brtrue_S,
+            Code.Ldarg_0, Code.Ldc_I4, Code.Call, Code.Call, Code.Brtrue_S,
+            Code.Ldarg_0, Code.Ldc_I4, Code.Call, Code.Call, Code.Brfalse_S,
+            Code.Ldc_I4_1, Code.Stsfld
+        }; static readonly int SIG_TAIKOMANIA_OFF = SIG_TAIKOMANIA.Length - 2;
         #endregion
         #region Pattern scanning
         static int Find(MethodDef d, Code[] sig)
