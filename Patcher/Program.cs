@@ -267,6 +267,16 @@ namespace Patcher
                 Instruction.Create(OpCodes.Ret)
             });
             Console.WriteLine("[+] Game update check hooked.");
+
+            l = ((List<Instruction>)game.Find(game_mapping.Encrypt("osu.OsuMain"), true)
+                .FindMethod(game_mapping.Encrypt("Main")).Body.Instructions);
+            idx = Find(l, SIG_CUTTINGEDGE);
+            if (idx != -1)
+            {
+                game.Find("Core.Main", false).FindMethod("IsStable")
+                    .Body.Instructions[0].OpCode = OpCodes.Ldc_I4_0;
+                Console.WriteLine("[+] Cutting edge build fixed.");
+            }
         }
         #region Patterns
         static readonly Code[] SIG_VERSION =
@@ -303,6 +313,13 @@ namespace Patcher
             Code.Ldarg_0, Code.Ldc_I4, Code.Call, Code.Call, Code.Brfalse_S,
             Code.Ldc_I4_1, Code.Stsfld
         }; static readonly int SIG_TAIKOMANIA_OFF = SIG_TAIKOMANIA.Length - 2;
+        static readonly Code[] SIG_CUTTINGEDGE =
+        {
+            Code.Ldsfld, Code.Ldlen, Code.Conv_I4,
+            Code.Ldc_I4_2, Code.Bge_S,
+            Code.Ldc_I4_2, Code.Newobj, Code.Call, Code.Pop,
+            Code.Call
+        };
         #endregion
         #region Pattern scanning
         static int Find(MethodDef d, Code[] sig)

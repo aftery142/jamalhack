@@ -22,6 +22,7 @@ using sdk::DiscordRPC;
 using sdk::osu.Online.Social;
 using Keys = sdk::Microsoft.Xna.Framework.Input.Keys;
 using sdk::Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Core
 { //mega clean code
@@ -34,8 +35,14 @@ namespace Core
 
         private static ClientSettings set = new ClientSettings();
         public static string GetGamePath() => set.GamePath;
+        public static bool IsStable() => true;
         public static void OnInit()
         {
+            if (!IsStable() && Environment.GetCommandLineArgs().Length < 2)
+            {
+                Process.Start(Assembly.GetEntryAssembly().Location, "-go");
+                Environment.Exit(0);
+            }
             AllocConsole();
             Console.Title = "osu!";
             Utility.Success("jamal lol xD");
@@ -45,6 +52,8 @@ namespace Core
             Utility.Log("-> https://github.com/aftery142/jamalhack");
             Utility.Log("If you lost access to the private version,");
             Utility.Log("try contacting me on Telegram/Slack.\n");
+
+            Utility.Debug("Command line args: " + string.Join(" ", Environment.GetCommandLineArgs()));
 
             Directory.CreateDirectory("jamal");
             Directory.CreateDirectory("jamal/configs");
@@ -259,7 +268,14 @@ namespace Core
             if (source != (SkinSource)1 || !Miscellaneous.Skinny
                 || name == null || name.StartsWith("button")) return null;
             string x = name.StartsWith("menu-background") ? "menu-background" : name;
-            pTexture tex = TextureManager.Load(x, (SkinSource)2, atlas);
+            pTexture tex = null;
+            try
+            {
+                tex = TextureManager.Load(x, (SkinSource)2, atlas);
+            } catch (Exception e)
+            {
+                return null;
+            }
             if (tex != null)
                 Utility.Debug("Loaded texture: " + x);
             return tex;
