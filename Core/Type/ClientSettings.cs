@@ -17,5 +17,7 @@ namespace Core.Type
         public bool SafeMode = false;
         [JsonProperty("Allow Game Updates")]
         public bool GameUpdates = true;
+        [JsonProperty("No Console")]
+        public bool DisableConsole = false;
     }
 }

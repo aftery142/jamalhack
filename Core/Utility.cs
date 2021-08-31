@@ -27,6 +27,8 @@ namespace Core
             int flNewProtect, out int lpflOldProtect);
         [DllImport("kernel32.dll")]
         public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetConsoleWindow();
 
         private const int RNDM_FCTR = 4;
         private static Random random = new Random();
@@ -91,6 +93,7 @@ namespace Core
         }
         public static void Log(object obj, ConsoleColor clr = ConsoleColor.White)
         {
+            if (GetConsoleWindow() == IntPtr.Zero) return;
             Console.ForegroundColor = clr;
             Console.WriteLine(obj);
         }

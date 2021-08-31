@@ -23,6 +23,7 @@ using sdk::osu.Online.Social;
 using Keys = sdk::Microsoft.Xna.Framework.Input.Keys;
 using sdk::Newtonsoft.Json;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Core
 { //mega clean code
@@ -154,6 +155,14 @@ namespace Core
             else Utility.Warn("Safe mode is on. Streamproof rendering will be unavailable.");
 
             SkinManager.add_OnSkinChanged(OnSkinChanged);
+
+            if (set.DisableConsole)
+            {
+                FreeConsole();
+                //Console.SetIn(new StreamReader(Console.OpenStandardInput()));
+                //Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
+                //Console.SetError(new StreamWriter(Console.OpenStandardError()) { AutoFlush = true });
+            }
         }
         public static void OnExit()
         {
