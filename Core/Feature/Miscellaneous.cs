@@ -2,6 +2,8 @@
 
 using sdk::Microsoft.Xna.Framework.Input;
 using sdk::Newtonsoft.Json;
+using sdk::Newtonsoft.Json.Converters;
+using sdk::Newtonsoft.Json.Serialization;
 using sdk::osu.Audio;
 using sdk::osu_common.Bancho.Objects;
 using System;
