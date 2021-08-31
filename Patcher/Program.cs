@@ -257,6 +257,16 @@ namespace Patcher
                     Instruction.Create(OpCodes.Call, game.Find("Core.Main", false).FindMethod("OnDiscordPresenceUpdate")));
                 Console.WriteLine("[+] Discord presence update hooked.");
             }
+
+            l = ((List<Instruction>)game.Find(game_mapping.Encrypt("osu_common.Updater.CommonUpdater"), true)
+                .FindMethod(game_mapping.Encrypt("doUpdate")).Body.Instructions);
+            l.InsertRange(0, new Instruction[] {
+                Instruction.Create(OpCodes.Call, game.Find("Core.Main", false).FindMethod("AllowGameUpdates")),
+                Instruction.Create(OpCodes.Brtrue, l[0]),
+                Instruction.Create(OpCodes.Ldc_I4_0),
+                Instruction.Create(OpCodes.Ret)
+            });
+            Console.WriteLine("[+] Game update check hooked.");
         }
         #region Patterns
         static readonly Code[] SIG_VERSION =

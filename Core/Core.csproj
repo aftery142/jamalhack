@@ -58,6 +58,7 @@
     <Compile Include="Management\ConfigSystem.cs" />
     <Compile Include="Management\InputSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Type\ClientSettings.cs" />
     <Compile Include="Type\Keybind.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>

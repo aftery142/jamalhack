@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Core.Feature
 {
+    // TODO: refactor
     public static class HWIDSpoof
     {
         private static JObject profile = null;

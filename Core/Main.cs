@@ -21,6 +21,7 @@ using sdk::osu.Graphics;
 using sdk::DiscordRPC;
 using sdk::osu.Online.Social;
 using Keys = sdk::Microsoft.Xna.Framework.Input.Keys;
+using sdk::Newtonsoft.Json;
 
 namespace Core
 { //mega clean code
@@ -30,8 +31,9 @@ namespace Core
         static extern bool AllocConsole();
         [DllImport("kernel32.dll")]
         static extern bool FreeConsole();
-        private static string game_path = null;
-        public static string GetGamePath() => game_path;
+
+        private static ClientSettings set = new ClientSettings();
+        public static string GetGamePath() => set.GamePath;
         public static void OnInit()
         {
             AllocConsole();
@@ -39,38 +41,69 @@ namespace Core
             Utility.Success("jamal lol xD");
             Utility.Warn("(i wanna man edition)\n");
 
+            Utility.Log("This is the public & free version of jamalhack.");
+            Utility.Log("-> https://github.com/aftery142/jamalhack");
+            Utility.Log("If you lost access to the private version,");
+            Utility.Log("try contacting me on Telegram/Slack.\n");
+
             Directory.CreateDirectory("jamal");
             Directory.CreateDirectory("jamal/configs");
 
-            #region Load game path
-            if (File.Exists("jamal/path.txt"))
-                game_path = File.ReadAllLines("jamal/path.txt")[0];
-            if (!File.Exists(game_path))
-                game_path = null;
-            if (game_path == null && File.Exists("osu!.exe"))
+            #region Load settings
+            try
             {
-                game_path = "osu!.exe";
-                Utility.Log("Trying to use osu! executable from current directory.");
+                JsonConvert.PopulateObject
+                    (File.ReadAllText("jamal/settings.json"), set);
             }
-            if (game_path != null && !AuthenticodeTools.IsTrusted(game_path))
+            catch (FileNotFoundException) {
+                if (File.Exists("jamal/path.txt"))
+                    set.GamePath = File.ReadAllLines("jamal/path.txt")[0];
+                File.WriteAllText("jamal/settings.json",
+                    JsonConvert.SerializeObject(set, (Formatting)1));
+            }
+            catch (Exception e)
             {
-                game_path = null;
+                Utility.Fail("Failed to load client settings!");
+                Utility.Fail(e);
+            }
+            #endregion
+
+            #region Validate game path
+            if (!File.Exists(set.GamePath))
+                set.GamePath = null;
+            if (set.GamePath == null && File.Exists("osu!.exe"))
+            {
+                try
+                {
+                    set.GamePath = Path.GetFullPath("osu!.exe");
+                    Utility.Log("Trying to use osu! executable from current directory.");
+                } catch (Exception e)
+                {
+                    Utility.Warn(e);
+                }
+            }
+            if (set.GamePath != null && !AuthenticodeTools.IsTrusted(set.GamePath))
+            {
+                set.GamePath = null;
                 Utility.Fail("Original osu! executable is not signed!?");
             }
-            if (game_path == null) {
+            if (set.GamePath == null) {
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "osu! executable|osu!.exe";
                 ofd.CheckPathExists = true;
                 ofd.InitialDirectory = Assembly.GetEntryAssembly().Location;
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    File.WriteAllText("jamal/path.txt", ofd.FileName);
+                    set.GamePath = ofd.FileName;
+                    File.WriteAllText("jamal/settings.json",
+                        JsonConvert.SerializeObject(set, (Formatting)1));
                     Utility.Success("Please reopen game!");
                     Console.ReadLine();
                 }
             }
-            if (game_path == null) Environment.Exit(0);
+            if (set.GamePath == null) Environment.Exit(0);
             #endregion
+            Utility.Debug("Game path: " + set.GamePath);
 
             ConfigSystem.Save("default");
             ConfigSystem.Load("current");
@@ -87,25 +120,29 @@ namespace Core
             Submissions.Init();
             ConfigSystem.Init();
 
-            #region Hooking
-            IntPtr gl = Utility.LoadLibrary("opengl32.dll");
-            IntPtr swap = Utility.GetProcAddress(gl, "wglSwapBuffers");
-            IntPtr pxl = Utility.GetProcAddress(gl, "glReadPixels");
-            if (swap == IntPtr.Zero) Utility.Fail("wglSwapBuffers was not found!");
-            else
+            if (!set.SafeMode)
             {
-                hkmwglSwapBuffers = new Hooker<fnwglSwapBuffers>(swap, hkwglSwapBuffers);
-                hkmwglSwapBuffers.Hook();
-                Utility.Debug("wglSwapBuffers hooked.");
+                #region Hooking
+                IntPtr gl = Utility.LoadLibrary("opengl32.dll");
+                IntPtr swap = Utility.GetProcAddress(gl, "wglSwapBuffers");
+                IntPtr pxl = Utility.GetProcAddress(gl, "glReadPixels");
+                if (swap == IntPtr.Zero) Utility.Fail("wglSwapBuffers was not found!");
+                else
+                {
+                    hkmwglSwapBuffers = new Hooker<fnwglSwapBuffers>(swap, hkwglSwapBuffers);
+                    hkmwglSwapBuffers.Hook();
+                    Utility.Debug("wglSwapBuffers hooked.");
+                }
+                if (pxl == IntPtr.Zero) Utility.Fail("glReadPixels was not found!");
+                else
+                {
+                    hkmglReadPixels = new Hooker<fnglReadPixels>(pxl, hkglReadPixels);
+                    hkmglReadPixels.Hook();
+                    Utility.Debug("glReadPixels hooked.");
+                }
+                #endregion
             }
-            if (pxl == IntPtr.Zero) Utility.Fail("glReadPixels was not found!");
-            else
-            {
-                hkmglReadPixels = new Hooker<fnglReadPixels>(pxl, hkglReadPixels);
-                hkmglReadPixels.Hook();
-                Utility.Debug("glReadPixels hooked.");
-            }
-            #endregion
+            else Utility.Warn("Safe mode is on. Streamproof rendering will be unavailable.");
 
             SkinManager.add_OnSkinChanged(OnSkinChanged);
         }
@@ -162,6 +199,11 @@ namespace Core
                 Player.Instance.dateTimeCheckTimeComp 
                     = Player.Instance.audioCheckTimeComp = GameBase.Time;
                 Player.Instance.audioCheckCount = 0;
+                if (!Player.Instance.flCheckedThisPlay && Player.Instance.flSkippedThisNote < 9)
+                {
+                    Player.Instance.flCheckedThisPlay = true;
+                    Player.Instance.flSkippedThisNote = 0;
+                }
                 if (Miscellaneous.PauseDelay && AudioEngine.Time - Player.Instance.LastPause < 1000)
                     Player.Instance.LastPause = AudioEngine.Time - 1000;
                 if (Modifiers.TD == Modifiers.YesNoMode.Yes)
@@ -226,6 +268,8 @@ namespace Core
             => DiscordPresence.GetID(s);
         public static RichPresence OnDiscordPresenceUpdate(RichPresence p)
             => DiscordPresence.Update(p);
+        public static bool AllowGameUpdates()
+            => set.GameUpdates;
         public static void OnSkinChanged()
         {
             Utility.Debug("Skin changed.");
