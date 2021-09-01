@@ -177,7 +177,6 @@ namespace Core
         }
         public static bool OnLoadAC()
         {
-            return false;
             string md5 = CryptoHelper.GetMd5("osu!auth.dll");
             if (!string.IsNullOrEmpty(md5))
             {
@@ -198,8 +197,11 @@ namespace Core
                 if (md5 != "543daf5f2b96662c138c0b25663a66e5"
                     && md5 != "e2109a27efb428af69318c41fc4d96c8")
                     Utility.Warn("osu!auth.dll version is unknown. It might be unsafe to submit scores.");
-                if (Utility.LoadLibrary("auth_emu.dll") != IntPtr.Zero) // emu broken as of now :(
+                if (Utility.LoadLibrary("auth_emu.dll") != IntPtr.Zero)
+                { // fixed! now works on the latest version (hopefully).
                     Utility.Success("hello :)");
+                    return false;
+                }
                 return true;
             }
             else return false;
