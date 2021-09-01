@@ -73,7 +73,8 @@ namespace Core.Feature
             p.Assets.SmallImageText = (sImgText != null ? sImgText : p.State + " [" + Player.get_Mode() + "]");
             p.Assets.LargeImageText = (lImgText != null ? lImgText : "my account (nine digits)");
             if (Details != null) p.Details = Details;
-            else if (p.Details == null) p.Details = "Gaming on [" + General.get_INTERNAL_BUILD_NAME() + "]";
+            else if (p.Details == null) p.Details = "Playing on " + Utility.GetServer()
+                    + " with version [" + General.get_INTERNAL_BUILD_NAME() + "]";
             p.State = (State != null ? State : string.Format(
                 LocalisationManager.GetString(OsuString.ChatEngine_PrivateMessageReceived), "BanchoBot"));
             p.Assets.SmallImageKey = sImgKey;

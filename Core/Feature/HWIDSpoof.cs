@@ -30,11 +30,14 @@ namespace Core.Feature
             if (pfl == 1)
             {
                 profile = GenerateProfile();
+                string s = Utility.Input("New profile name: ");
+                if (!string.IsNullOrWhiteSpace(s)) profile["name"] = s;
+
                 arr.Add(profile);
                 Utility.Success("New profile name: " + profile["name"]);
                 File.WriteAllText("jamal/profiles.json", arr.ToString());
             }
-            else if (pfl > 1) profile = arr[pfl - 2].ToObject<JObject>();
+            else if (pfl > 1 && pfl - 2 < arr.Count) profile = arr[pfl - 2].ToObject<JObject>();
             Utility.Log(profile == null ? "Not using identity spoof.\n" : "Identity spoof is enabled.\n");
         }
         /*private static string md5_some_shit(string text2)

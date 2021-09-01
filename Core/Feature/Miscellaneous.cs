@@ -20,8 +20,6 @@ namespace Core.Feature
         {
             None, Freeze, Spazz
         }
-        [JsonProperty("Watermark")]
-        public static bool Watermark = true;
         [JsonProperty("Stream Proof")]
         public static bool StreamProof = true;
         [JsonProperty("Pausing is not Cheating")]

@@ -52,7 +52,6 @@
     <Compile Include="Feature\HWIDSpoof.cs" />
     <Compile Include="Feature\Miscellaneous.cs" />
     <Compile Include="Feature\Modifiers.cs" />
-    <Compile Include="Feature\Overlay.cs" />
     <Compile Include="Feature\Submissions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Management\ConfigSystem.cs" />

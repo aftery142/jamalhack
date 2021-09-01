@@ -24,6 +24,7 @@ using Keys = sdk::Microsoft.Xna.Framework.Input.Keys;
 using sdk::Newtonsoft.Json;
 using System.Diagnostics;
 using System.Threading;
+using sdk::osu.GameModes.Options;
 
 namespace Core
 { //mega clean code
@@ -176,6 +177,7 @@ namespace Core
         }
         public static bool OnLoadAC()
         {
+            return false;
             string md5 = CryptoHelper.GetMd5("osu!auth.dll");
             if (!string.IsNullOrEmpty(md5))
             {
@@ -206,11 +208,11 @@ namespace Core
         public static void ActualOnDraw()
         {
             Modifiers.Draw();
-            Overlay.Draw();
             Submissions.Draw();
         }
         public static void OnDraw()
         {
+            OsuMain.startupValue = 0;
             if (Player.Instance != null) {
                 Player.Instance.audioCheckTime = AudioEngine.Time;
                 Player.Instance.dateTimeCheckTimeInitial = DateTime.Now.Ticks / 10000L;
@@ -298,7 +300,6 @@ namespace Core
         public static void OnSkinChanged()
         {
             Utility.Debug("Skin changed.");
-            Overlay.Reset();
         }
         #region wglSwapBuffers hooking
         [DllImport("opengl32.dll", SetLastError = true)]

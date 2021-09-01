@@ -4,6 +4,7 @@ using sdk::Microsoft.Xna.Framework.Graphics;
 using sdk::osu;
 using sdk::osu.GameModes.Play;
 using sdk::osu.Input;
+using sdk::osu.Online;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Core
@@ -50,6 +52,13 @@ namespace Core
         public static bool CanPlay() => GameBase.Instance != null && Player.Instance != null
                 && Player.Loaded && GameBase.Mode == OsuModes.Play && !InputManager.get_ReplayMode()
                 && !Player.Paused;
+        public static string GetServer()
+        {
+            if (string.IsNullOrEmpty(BanchoClient.CustomServerEndpoint))
+                return "Bancho";
+            return Thread.CurrentThread.CurrentCulture.TextInfo
+                .ToTitleCase(BanchoClient.CustomServerEndpoint.Split('.')[0].ToLower());
+        }
         
         public static Color HSV(double hue, double saturation, double value)
         {
@@ -76,12 +85,14 @@ namespace Core
             else
                 return new Color((byte)v, (byte)p, (byte)q);
         }
-        public static int Choose(object str)
+        public static string Input(object str)
         {
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.Write(str);
-            return Convert.ToInt32(Console.ReadLine());
+            return Console.ReadLine();
         }
+        public static int Choose(object str)
+            => Convert.ToInt32(Input(str));
         public static void Success(object obj) => Log(obj, ConsoleColor.Green);
         public static void Fail(object obj) => Log(obj, ConsoleColor.Red);
         public static void Warn(object obj) => Log(obj, ConsoleColor.Yellow);
