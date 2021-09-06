@@ -1,3 +1,5 @@
+# dont use this on bancho as im sure its detected by now
+
 # Jamalhack - the quickest way to get eye cancer
 The Game
 
