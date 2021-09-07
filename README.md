@@ -1,4 +1,4 @@
-# dont use this on bancho as im sure its detected by now
+# dont use this on bancho as im sure its detected by now, please refer to https://github.com/aftery142/jamalhack-private for anticheat updates and additional features
 
 # Jamalhack - the quickest way to get eye cancer
 The Game
