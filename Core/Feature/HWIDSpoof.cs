@@ -113,8 +113,8 @@ namespace Core.Feature
             return CryptoHelper.GetMd5(OsuMain.get_FullPath())
                 + ":" + profile["adapters"].ToString()
                 + ":" + Utility.Stringify(CryptoHelper.GetMd5ByteArrayString(profile["adapters"].ToString()))
-                + ":" + Utility.Stringify(CryptoHelper.GetMd5ByteArrayString(profile["uninstall"].ToString()))
-                + ":" + Utility.Stringify(CryptoHelper.GetMd5ByteArrayString(profile["disk"].ToString())) + ":";
+                + ":" + Utility.Stringify(CryptoHelper.GetMd5ByteArrayString(Utility.Stringify(CryptoHelper.GetMd5ByteArrayString(profile["uninstall"].ToString()))))
+                + ":" + Utility.Stringify(CryptoHelper.GetMd5ByteArrayString(Utility.Stringify(CryptoHelper.GetMd5ByteArrayString(profile["disk"].ToString())))) + ":";
         }
         private static JObject GenerateProfile()
         {
